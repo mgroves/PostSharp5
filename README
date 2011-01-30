@@ -1,0 +1,34 @@
+5 Ways That PostSharp Can SOLIDify Your Code
+
+This project is a bunch of projects full of example code that's used in a
+blog series (available soon at SharpCrafters.com) entitled "5 Ways That PostSharp Can SOLIDify Your Code".
+
+Note that I have included the PostSharp.dll file in this repository, but it's possible that this
+DLL will be out of date by the time you use this source (I may keep it current, I may not).  You need
+to install PostSharp anyway, so once you've done that, just update the DLL with the latest version, or
+alternatively change all your references to the PostSharp.dll file that's likely sitting in a folder
+like C:\Program Files\PostSharp
+
+Here are the 5 topics, I will post the blog URLs here once they become public:
+
+1 - Lazy loading of dependencies
+	Using PostSharp to help you with Dependency Inversion
+	Project 1a is a very simple example
+	Project 1b introduces some compile time validations
+
+2 - Authorization
+	Getting fine grain control of authorization with PostSharp
+
+3 - Logging/Auditing
+	Using PostSharp to painlessly add logging and/or auditing to an entire application
+
+4 - Caching
+	Making the use of caching easy and transparent
+
+5 - Transaction Management
+	Using PostSharp to avoid writing the same try/begin/commit/catch/rollback/retry/log boilerplate code over and over.
+
+Contact me for any reason at all:
+
+http://mgroves.com
+http://twitter.com/mgroves
