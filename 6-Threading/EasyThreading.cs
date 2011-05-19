@@ -75,7 +75,7 @@ namespace Threading
         public override void OnInvoke(MethodInterceptionArgs args)
         {
             var dispatcher = (Form) args.Instance;
-            if (dispatcher.InvokeRequired)
+            if (!dispatcher.InvokeRequired)
             {
                 args.Proceed();
             }
