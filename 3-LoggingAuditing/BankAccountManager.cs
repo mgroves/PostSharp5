@@ -19,7 +19,6 @@ namespace LoggingAuditing
             RefreshBalance();
         }
 
-        [TransactionAudit]
         private void withdrawlButton_Click(object sender, EventArgs e)
         {
             BankAccount.Withdrawl(decimal.Parse(this.amountTextbox.Text));

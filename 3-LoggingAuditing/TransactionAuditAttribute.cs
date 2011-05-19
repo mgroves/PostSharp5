@@ -12,17 +12,6 @@ namespace LoggingAuditing
         private Type _className;
         private int _amountParameterIndex = -1;
 
-        public override bool CompileTimeValidate(MethodBase method)
-        {
-            if(_amountParameterIndex == -1)
-            {
-                Message.Write(SeverityType.Warning, "999",
-                              "TransactionAudit was unable to find an 'amount' to audit in {0}.{1}", _className, _methodName);
-                return false;
-            }
-            return true;
-        }
-
         public override void CompileTimeInitialize(MethodBase method, AspectInfo aspectInfo)
         {
             _methodName = method.Name;
@@ -36,6 +25,17 @@ namespace LoggingAuditing
                     _amountParameterIndex = i;
                 }
             }
+        }
+
+        public override bool CompileTimeValidate(MethodBase method)
+        {
+            if (_amountParameterIndex == -1)
+            {
+                Message.Write(SeverityType.Warning, "999",
+                              "TransactionAudit was unable to find an 'amount' to audit in {0}.{1}", _className, _methodName);
+                return false;
+            }
+            return true;
         }
 
         public override void OnEntry(MethodExecutionArgs args)

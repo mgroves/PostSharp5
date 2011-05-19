@@ -1,19 +1,25 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections;
 using System.Windows.Forms;
 using PostSharp.Aspects;
 using PostSharp.Extensibility;
+using PostSharp.Reflection;
 using Message = PostSharp.Extensibility.Message;
 
 namespace LazyLoading_CompileTimeInitialize
 {
     public partial class UserForm : Form
     {
-        [LazyLoad]
-        private IUserService _userService;
+        [LoadDependency] private IUserService _userService;
+
+        // a non-interface
+        //[LoadDependency] DateTime invalidDependency1;
+
+        // an interface with no defined mapping
+        //[LoadDependency] IEnumerable invalidDependency2;
 
         // I'm making this a public property only so that
-        // the LazyLoadAttribute can write to it for demonstration purposes
+        // the LoadDependency can write to it for demonstration purposes
         public ListBox LogListBox { get { return _logListBox; } }
 
         public UserForm()
@@ -28,36 +34,20 @@ namespace LazyLoading_CompileTimeInitialize
         }
     }
 
-    // another "dummy" interface and service
-    // plug in your own real services/interfaces
-    public interface IUserService
-    {
-        string AuthenticateUser(string username, string password);
-    }
-
-    public class UserService : IUserService
-    {
-        public string AuthenticateUser(string username, string password)
-        {
-            var r = new Random(DateTime.Now.Millisecond);
-            return username + " was logged in: " + (r.NextDouble() < 0.5);
-        }
-    }
-
     [Serializable]
-    public sealed class LazyLoadAttribute : LocationInterceptionAspect
+    public sealed class LoadDependency : LocationInterceptionAspect
     {
         private Type _type;
 
-        public override bool CompileTimeValidate(PostSharp.Reflection.LocationInfo locationInfo)
+        public override bool CompileTimeValidate(LocationInfo locationInfo)
         {
             if (!locationInfo.LocationType.IsInterface)
             {
-                Message.Write(SeverityType.Error, "001", "LazyLoad can only be used on Interfaces in {0}.{1}", locationInfo.DeclaringType, locationInfo.Name);
+                Message.Write(SeverityType.Error, "001", "LoadDependency can only be used on Interfaces in {0}.{1}", locationInfo.DeclaringType, locationInfo.Name);
                 return false;
             }
 
-            _type = DependencyMap.GetConcreteType(locationInfo.LocationType);
+            _type = ObjectFactory.GetInstanceType(locationInfo.LocationType);
             if (_type == null)
             {
                 Message.Write(SeverityType.Error, "002", "A concrete type was not found for {0}.{1}", locationInfo.DeclaringType, locationInfo.Name);
@@ -84,21 +74,42 @@ namespace LazyLoading_CompileTimeInitialize
         }
     }
 
-    // this DependencyMap only contains one interface<->dependency mapping
-    // but more can be easily added
-    public static class DependencyMap
+    // this is just a "dummy" objectfactory
+    // use the IoC service locator of your choice (like StructureMap) instead
+    internal static class ObjectFactory
     {
-        public static Type GetConcreteType(Type locationType)
+        public static Type GetInstanceType(Type locationType)
         {
-            var dict = new Dictionary<Type, Type>();
-            // dict.Add(interface type, dependency type)
-            dict.Add(typeof(IUserService), typeof(UserService));
-
-            if (dict.ContainsKey(locationType))
+            // note that this is a very silly service locator
+            // since it returns a ProductRepository no matter
+            // what Type is passed in
+            if (locationType == typeof(IUserService))
             {
-                return dict[locationType];
+                return typeof(UserService);
             }
             return null;
+        }
+    }
+
+    // another "dummy" interface and service
+    // plug in your own real services/interfaces
+    public interface IUserService
+    {
+        string AuthenticateUser(string username, string password);
+    }
+
+    public class UserService : IUserService
+    {
+        private readonly Random _rand;
+
+        public UserService()
+        {
+            _rand = new Random(DateTime.Now.Millisecond);
+        }
+
+        public string AuthenticateUser(string username, string password)
+        {
+            return username + " was logged in: " + (_rand.NextDouble() < 0.5);
         }
     }
 }

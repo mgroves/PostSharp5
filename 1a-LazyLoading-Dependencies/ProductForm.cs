@@ -2,7 +2,7 @@
 using System.Windows.Forms;
 using PostSharp.Aspects;
 
-namespace WindowsFormsApplication1
+namespace LazyLoadingDependencies
 {
     public partial class ProductForm : Form
     {
@@ -21,6 +21,33 @@ namespace WindowsFormsApplication1
             LogListBox.Items.Add(_productRepository.GetProductDescription("soda"));
             LogListBox.Items.Add(_productRepository.GetProductDescription("book"));
             LogListBox.Items.Add(_productRepository.GetProductDescription("water bottle"));
+        }
+    }
+
+    [Serializable]
+    public sealed class LoadDependencyAttribute : LocationInterceptionAspect
+    {
+        public override void OnGetValue(LocationInterceptionArgs args)
+        {
+            var form = (ProductForm)args.Instance; // this form is only used here to write to a listbox for demonstration
+
+            args.ProceedGetValue(); // this actually fetches the field and populates the args.Value
+            if (args.Value == null)
+            {
+                form.LogListBox.Items.Add("Instantiating ProductService");
+                var locationType = args.Location.LocationType;
+                var instantiation = ObjectFactory.GetInstance(locationType);
+
+                if (instantiation != null)
+                {
+                    args.SetNewValue(instantiation);
+                }
+                args.ProceedGetValue();
+            }
+            else
+            {
+                form.LogListBox.Items.Add("Using a ProductService that has already been instantiated");
+            }
         }
     }
 
@@ -49,33 +76,6 @@ namespace WindowsFormsApplication1
         public string GetProductDescription(string productName)
         {
             return "Product: " + productName;
-        }
-    }
-
-    [Serializable]
-    public sealed class LoadDependencyAttribute : LocationInterceptionAspect
-    {
-        public override void OnGetValue(LocationInterceptionArgs args)
-        {
-            var form = (ProductForm) args.Instance; // this form is only used here to write to a listbox for demonstration
-
-            args.ProceedGetValue(); // this actually fetches the field and populates the args.Value
-            if (args.Value == null)
-            {
-                form.LogListBox.Items.Add("Instantiating ProductService");
-                var locationType = args.Location.LocationType;
-                var instantiation = ObjectFactory.GetInstance(locationType);
-
-                if (instantiation != null)
-                {
-                    args.SetNewValue(instantiation);
-                }
-                args.ProceedGetValue();
-            }
-            else
-            {
-                form.LogListBox.Items.Add("Using a ProductService that has already been instantiated");
-            }
         }
     }
 }

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
-using LazyLoadingDependencies;
+using Threading;
 
-namespace WindowsFormsApplication1
+namespace _6_Threading
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace WindowsFormsApplication1
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new ProductForm());
+            Application.Run(new EasyThreading());
         }
     }
 }

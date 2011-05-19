@@ -15,6 +15,13 @@ namespace Auth
             InitializeComponent();
 
             RefreshGovtForms();
+
+            PutCurrentUserNameInTitleBar();
+        }
+
+        void PutCurrentUserNameInTitleBar()
+        {
+            this.Text = "You are logged in as: " + Auth.GetCurrentUsername();
         }
 
         private void RefreshGovtForms()

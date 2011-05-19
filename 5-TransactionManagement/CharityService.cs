@@ -9,11 +9,13 @@ namespace TransactionManagement
     {
         private ILogService _logService;
         private readonly IList<Charity> _charityDatabase;
+        private Random _rand;
 
         public CharityService()
         {
             _charityDatabase = PreprogrammedCharities.ToList();
             _logService = new LogService();
+            _rand = new Random(DateTime.Now.Millisecond);
         }
 
         // since we're not hooked up to a real data layer, these are just standins for demonstration
@@ -46,9 +48,9 @@ namespace TransactionManagement
             _charityDatabase[0].Name = PreprogrammedCharities.First().Name + " " + DateTime.Now.Millisecond;
         }
 
-        private static void SimulateUnreliableService()
+        private void SimulateUnreliableService()
         {
-            var rand = (new Random(DateTime.Now.Millisecond)).Next(0, 50);
+            var rand = (_rand.Next(0, 50));
             if (rand == 2)
             {
                 throw new Exception("Some unknown exception");

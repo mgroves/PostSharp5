@@ -11,7 +11,8 @@ namespace Auth
 
         public bool CurrentUserHasPermission(GovtForm singleForm, Permission permission)
         {
-            return singleForm.UserName == GetCurrentUsername();
+            var currentUser = GetCurrentUsername();
+            return singleForm.UserName == currentUser;
         }
     }
 }

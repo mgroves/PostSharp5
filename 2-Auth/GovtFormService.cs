@@ -15,6 +15,7 @@ namespace Auth
             _govtFormsDatabase.Add(new GovtForm { FormInformation = "steve smith's form details", UserName = "ssmith"});
             _govtFormsDatabase.Add(new GovtForm { FormInformation = "text of Susie Q's form information and details", UserName = "susieq"});
             _govtFormsDatabase.Add(new GovtForm { FormInformation = "Walter Mathau's form information details", UserName = "wmathau" });
+            _govtFormsDatabase.Add(new GovtForm { FormInformation = "Ali Groves's form information details", UserName = "agroves" });
         }
 
         public void SubmitForm(GovtForm form)
@@ -29,7 +30,7 @@ namespace Auth
             return _govtFormsDatabase;
         }
 
-        [AuthorizeReturnValue]
+        //[AuthorizeReturnValue]
         public GovtForm GetFormById(Guid guid)
         {
             return _govtFormsDatabase.FirstOrDefault(form => form.FormId == guid);

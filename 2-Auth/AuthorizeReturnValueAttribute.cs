@@ -23,9 +23,9 @@ namespace Auth
             var singleForm = args.ReturnValue as GovtForm;
             if (singleForm != null)
             {
-                if(Auth.CurrentUserHasPermission(singleForm, Permission.Read))
+                if(!Auth.CurrentUserHasPermission(singleForm, Permission.Read))
                 {
-                    MessageBox.Show("You are not authorized to view the details of that form", "Authorization Denied!");
+                    MessageBox.Show("You are not authorized to view the details of that form.", "Authorization Denied!");
                     args.ReturnValue = null;
                 }
                 return;

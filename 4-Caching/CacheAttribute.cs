@@ -27,11 +27,6 @@ namespace Caching
             }
         }
 
-        public override void RuntimeInitialize(MethodBase method)
-        {
-            syncRoot = new object();
-        }
-
         public override void CompileTimeInitialize(MethodBase method, AspectInfo aspectInfo)
         {
             _methodName = method.Name;
@@ -55,15 +50,9 @@ namespace Caching
             return true;
         }
 
-        private static readonly IList<Type> DisallowedTypes = new List<Type>
-                                                                  {
-                                                                      typeof (Stream),
-                                                                      typeof (IEnumerable),
-                                                                      typeof (IQueryable)
-                                                                  };
-        private static bool IsDisallowedCacheReturnType(Type returnType)
+        public override void RuntimeInitialize(MethodBase method)
         {
-            return DisallowedTypes.Any(t => t.IsAssignableFrom(returnType));
+            syncRoot = new object();
         }
 
         public override void OnInvoke(MethodInterceptionArgs args)
@@ -100,6 +89,17 @@ namespace Caching
                 sb.Append(argument == null ? "_" : argument.ToString());
             }
             return sb.ToString();
+        }
+
+        private static readonly IList<Type> DisallowedTypes = new List<Type>
+                                                                  {
+                                                                      typeof (Stream),
+                                                                      typeof (IEnumerable),
+                                                                      typeof (IQueryable)
+                                                                  };
+        private static bool IsDisallowedCacheReturnType(Type returnType)
+        {
+            return DisallowedTypes.Any(t => t.IsAssignableFrom(returnType));
         }
     }
 }
