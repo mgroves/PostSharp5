@@ -99,7 +99,7 @@ namespace Caching
                                                                   };
         private static bool IsDisallowedCacheReturnType(Type returnType)
         {
-            return DisallowedTypes.Any(t => t.IsAssignableFrom(returnType));
+            return DisallowedTypes.Any(t => t == returnType);
         }
     }
 }
